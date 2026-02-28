@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 Not Found</title> <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .hidden-system { display: none !important; }
+        body { background-color: #000; font-family: 'Courier New', Courier, monospace; }
+        input { border: 1px solid #333 !important; }
+    </style>
+</head>
+<body class="text-gray-500">
+
+    <div id="lockScreen" class="min-h-screen flex flex-col items-center justify-center p-6">
+        <div class="w-full max-w-xs">
+            <h1 class="text-sm mb-4 opacity-20">System Terminal [Version 10.0.19045.3803]</h1>
+            <input type="password" id="accessKey" placeholder="Enter Credentials..." 
+                class="w-full bg-transparent p-2 outline-none text-red-600 border-b border-gray-800 focus:border-red-900 transition mb-4">
+            <button onclick="unlock()" class="text-[10px] uppercase tracking-widest hover:text-white transition">Execute _</button>
+            <p id="fail" class="text-[10px] mt-2 text-red-900 hidden">Access Denied.</p>
+        </div>
+    </div>
+
+    <div id="dashboard" class="hidden-system min-h-screen p-4 md:p-10">
+        <div class="max-w-5xl mx-auto">
+            <div class="flex justify-between items-center border-b border-gray-800 pb-4 mb-8">
+                <h2 class="text-white font-bold tracking-tighter">KAILASH TUBE <span class="text-red-600 px-2 border border-red-600 text-[10px] ml-2">CORE_V1</span></h2>
+                <button onclick="location.reload()" class="text-xs hover:text-red-500">Terminate Session</button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                <div class="lg:col-span-1 space-y-6">
+                    <h3 class="text-white text-xs font-bold uppercase border-l-2 border-red-600 pl-2">Add New Data</h3>
+                    <div class="space-y-4">
+                        <input type="text" id="v_title" placeholder="Video Title" class="w-full bg-[#111] p-3 rounded text-sm text-white focus:ring-1 ring-red-600 outline-none">
+                        <input type="text" id="v_url" placeholder="Direct MP4 Link" class="w-full bg-[#111] p-3 rounded text-sm text-white focus:ring-1 ring-red-600 outline-none">
+                        <input type="text" id="v_thumb" placeholder="Thumbnail Image URL" class="w-full bg-[#111] p-3 rounded text-sm text-white focus:ring-1 ring-red-600 outline-none">
+                        <button onclick="pushVideo()" class="w-full bg-red-600 text-white py-3 rounded font-bold hover:bg-red-700 transition shadow-lg active:scale-95">
+                            DEPLOY VIDEO
+                        </button>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-2">
+                    <h3 class="text-white text-xs font-bold uppercase border-l-2 border-gray-600 pl-2 mb-6">Database Management</h3>
+                    <div id="db_list" class="grid grid-cols-1 gap-3 overflow-y-auto max-h-[60vh] pr-2 custom-scroll">
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const MASTER_PASS = "kailash786"; // Isko tum badal sakte ho
+
+        function unlock() {
+            const input = document.getElementById('accessKey').value;
+            if(input === MASTER_PASS) {
+                document.getElementById('lockScreen').classList.add('hidden-system');
+                document.getElementById('dashboard').classList.remove('hidden-system');
+                document.body.style.backgroundColor = "#0a0a0a";
+                loadDatabase();
+            } else {
+                document.getElementById('fail').classList.remove('hidden');
+                setTimeout(() => document.getElementById('fail').classList.add('hidden'), 2000);
+            }
+        }
+
+        function pushVideo() {
+            const t = document.getElementById('v_title').value;
+            const u = document.getElementById('v_url').value;
+            const th = document.getElementById('v_thumb').value;
+
+            if(!t || !u) return alert("Title and URL required.");
+
+            let videos = JSON.parse(localStorage.getItem('kailash_videos')) || [];
+            videos.unshift({ title: t, url: u, thumb: th || 'https://via.placeholder.com/300x170/222/fff?text=No+Image' });
+            localStorage.setItem('kailash_videos', JSON.stringify(videos));
+            
+            alert("Broadcast Success!");
+            document.getElementById('v_title').value = '';
+            document.getElementById('v_url').value = '';
+            document.getElementById('v_thumb').value = '';
+            loadDatabase();
+        }
+
+        function removeVideo(index) {
+            if(confirm("Confirm Deletion from Core?")) {
+                let videos = JSON.parse(localStorage.getItem('kailash_videos'));
+                videos.splice(index, 1);
+                localStorage.setItem('kailash_videos', JSON.stringify(videos));
+                loadDatabase();
+            }
+        }
+
+        function loadDatabase() {
+            const list = document.getElementById('db_list');
+            const videos = JSON.parse(localStorage.getItem('kailash_videos')) || [];
+            list.innerHTML = '';
+
+            if(videos.length === 0) {
+                list.innerHTML = `<p class="text-xs italic opacity-30">No data found in local_storage...</p>`;
+            }
+
+            videos.forEach((v, i) => {
+                list.innerHTML += `
+                    <div class="flex items-center justify-between bg-[#111] p-3 rounded border border-gray-900 hover:border-gray-700 transition group">
+                        <div class="flex items-center gap-4">
+                            <img src="${v.thumb}" class="w-16 h-10 object-cover rounded opacity-50 group-hover:opacity-100">
+                            <div>
+                                <p class="text-xs text-white font-bold truncate w-40 md:w-80">${v.title}</p>
+                                <p class="text-[10px] text-gray-600 truncate w-40">Source: ${v.url}</p>
+                            </div>
+                        </div>
+                        <button onclick="removeVideo(${i})" class="text-red-900 hover:text-red-500 text-[10px] font-bold uppercase tracking-tighter">Wipe</button>
+                    </div>
+                `;
+            });
+        }
+
+        // Enter key support
+        document.getElementById('accessKey').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') unlock();
+        });
+    </script>
+
+</body>
+</html>
