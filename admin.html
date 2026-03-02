@@ -1,0 +1,42 @@
+<script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
+
+<div class="glass-card p-12 text-center rounded-3xl border-2 border-dashed border-red-600/30 bg-zinc-900/50">
+    <h2 class="text-3xl font-bold mb-4">Kailash Tube Studio</h2>
+    <p class="text-gray-400 mb-8">Click below to upload videos directly to your cloud storage.</p>
+    
+    <button id="upload_widget" class="bg-red-600 text-white px-12 py-4 rounded-full font-bold hover:bg-red-700 transition-all transform hover:scale-105 shadow-xl shadow-red-600/20">
+        <i class="fa-solid fa-cloud-arrow-up mr-2"></i> Upload Video
+    </button>
+</div>
+
+<script>
+var myWidget = cloudinary.createUploadWidget({
+  cloudName: 'dh4k7hlfd', 
+  uploadPreset: 'ml_default', // Aapka preset name fix kar diya
+  sources: ['local', 'url'],
+  resourceType: 'video',
+  clientAllowedFormats: ["mp4", "mov", "webm"],
+  maxFileSize: 500000000 // 500MB Limit
+}, (error, result) => { 
+    if (!error && result && result.event === "success") { 
+      console.log('Done! Video URL: ', result.info.secure_url);
+      
+      // LocalStorage mein save kar rahe hain taaki index.html par dikhe
+      let videos = JSON.parse(localStorage.getItem('kailash_vids') || "[]");
+      videos.unshift({ // Naya video sabse upar dikhega
+          url: result.info.secure_url,
+          name: result.info.original_filename,
+          thumbnail: result.info.thumbnail_url || '',
+          date: new Date().toLocaleDateString()
+      });
+      localStorage.setItem('kailash_vids', JSON.stringify(videos));
+      
+      alert("Success! Video uploaded to Kailash Tube.");
+      window.location.href = "index.html"; 
+    }
+});
+
+document.getElementById("upload_widget").addEventListener("click", function(){
+    myWidget.open();
+}, false);
+</script>
