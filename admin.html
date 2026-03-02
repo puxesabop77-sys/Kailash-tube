@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sufiyan's Studio | Kailash Tube</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700;900&display=swap');
+        body { font-family: 'Poppins', sans-serif; background: #050505; color: white; overflow: hidden; }
+        
+        .glass-container {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .glow-button {
+            transition: all 0.3s ease;
+            box-shadow: 0 0 0px rgba(220, 38, 38, 0);
+        }
+        .glow-button:hover {
+            box-shadow: 0 0 20px rgba(220, 38, 38, 0.6);
+            transform: translateY(-2px);
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .animate-float { animation: float 4s ease-in-out infinite; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+
+    <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-red-600/10 rounded-full blur-[120px]"></div>
+    <div class="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-blue-600/10 rounded-full blur-[120px]"></div>
+
+    <div class="glass-container max-w-lg w-full p-12 rounded-[40px] text-center relative z-10 animate-up">
+        <div class="relative w-24 h-24 mx-auto mb-8 animate-float">
+            <div class="absolute inset-0 bg-red-600 rounded-3xl rotate-12 opacity-20"></div>
+            <div class="relative w-full h-full bg-zinc-900 border border-white/10 rounded-3xl flex items-center justify-center">
+                <i class="fa-solid fa-user-ninja text-3xl text-red-600"></i>
+            </div>
+        </div>
+
+        <h2 class="text-4xl font-black mb-2 tracking-tighter">SUFIYAN <span class="text-red-600">STUDIO</span></h2>
+        <p class="text-gray-500 text-xs uppercase tracking-[0.3em] mb-12 font-semibold">Kailash Tube Management</p>
+
+        <button id="upload_widget" class="glow-button w-full bg-red-600 text-white py-5 rounded-2xl font-bold text-lg flex items-center justify-center gap-3 active:scale-95">
+            <i class="fa-solid fa-clapperboard"></i> UPLOAD MASTERPIECE
+        </button>
+
+        <div class="mt-8 flex justify-center gap-6">
+            <a href="/home" class="text-gray-500 hover:text-white text-sm transition-colors font-medium flex items-center gap-2">
+                <i class="fa-solid fa-house-chimney text-xs"></i> Back to Home
+            </a>
+        </div>
+    </div>
+
+    <footer class="absolute bottom-8 text-gray-700 text-[10px] tracking-[0.5em] uppercase">
+        Authenticated Access Only
+    </footer>
+
+    <script>
+        var myWidget = cloudinary.createUploadWidget({
+            cloudName: 'dh4k7hlfd', 
+            uploadPreset: 'kailash_tube', // Aapka naya preset name
+            sources: ['local', 'url', 'camera'],
+            resourceType: 'video',
+            theme: 'minimal',
+            styles: {
+                palette: {
+                    window: "#050505",
+                    sourceBg: "#050505",
+                    windowBorder: "#dc2626",
+                    tabIcon: "#dc2626",
+                    inactiveTabIcon: "#555",
+                    menuIcons: "#dc2626",
+                    link: "#dc2626",
+                    action: "#dc2626",
+                    inProgress: "#dc2626",
+                    complete: "#20B832",
+                    error: "#ff0000",
+                    textDark: "#000",
+                    textLight: "#FFF"
+                }
+            }
+        }, (error, result) => { 
+            if (!error && result && result.event === "success") { 
+                let videos = JSON.parse(localStorage.getItem('kailash_vids') || "[]");
+                videos.unshift({
+                    url: result.info.secure_url,
+                    name: result.info.original_filename,
+                    date: new Date().toLocaleDateString()
+                });
+                localStorage.setItem('kailash_vids', JSON.stringify(videos));
+                
+                // Success Animation
+                document.querySelector('.glass-container').innerHTML = `
+                    <div class="py-10">
+                        <i class="fa-solid fa-circle-check text-6xl text-green-500 mb-6 animate-bounce"></i>
+                        <h3 class="text-2xl font-bold uppercase">Video Live Hogya!</h3>
+                        <p class="text-gray-500 mt-2">Redirecting to Home...</p>
+                    </div>`;
+                
+                setTimeout(() => { window.location.href = "/home"; }, 2000); // Redirect logic
+            }
+        });
+
+        document.getElementById("upload_widget").addEventListener("click", function(){
+            myWidget.open();
+        }, false);
+    </script>
+</body>
+</html>
