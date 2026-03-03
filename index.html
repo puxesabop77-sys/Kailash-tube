@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="flex items-center justify-center h-screen relative">
+
+<div class="blob w-96 h-96 bg-purple-600 top-0 left-0"></div>
+<div class="blob w-96 h-96 bg-pink-600 bottom-0 right-0"></div>
+
+<div class="glass p-8 rounded-xl w-96 text-white z-10">
+
+  <h1 class="text-3xl mb-6 text-center">Nova Tube 🚀</h1>
+
+  <input id="email" type="email" placeholder="Email"
+  class="w-full p-2 mb-3 bg-black/40 rounded">
+
+  <input id="password" type="password" placeholder="Password"
+  class="w-full p-2 mb-3 bg-black/40 rounded">
+
+  <button onclick="signUp()"
+  class="w-full bg-pink-600 p-2 rounded mb-2">Sign Up</button>
+
+  <button onclick="signIn()"
+  class="w-full bg-purple-600 p-2 rounded">Sign In</button>
+
+</div>
+
+<script type="module" src="js/auth.js"></script>
+</body>
+</html>
