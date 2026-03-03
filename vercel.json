@@ -1,0 +1,9 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/index.html" },
+    { "source": "/home", "destination": "/home.html" },
+    { "source": "/sufiyan", "destination": "/sufiyan.html" }
+  ],
+  "cleanUrls": true,
+  "trailingSlash": false
+}
