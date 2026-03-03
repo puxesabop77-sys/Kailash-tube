@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Nova Tube Pro Player</title>
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+body {
+  background: #000;
+}
+
+.glass {
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(20px);
+}
+
+.controls {
+  transition: opacity 0.3s ease;
+}
+
+.range::-webkit-slider-thumb {
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  background: red;
+  border-radius: 50%;
+  cursor: pointer;
+}
+</style>
+</head>
+
+<body class="text-white">
+
+<header class="flex justify-between p-5 bg-black">
+  <h1 class="text-red-600 text-xl font-bold">NOVA TUBE</h1>
+  <button onclick="history.back()">Back</button>
+</header>
+
+<div class="max-w-5xl mx-auto mt-5">
+
+  <!-- 🎬 VIDEO CONTAINER -->
+  <div id="videoWrapper" class="relative group">
+
+    <video id="video"
+      class="w-full rounded-xl"
+      crossorigin="anonymous">
+
+      <source id="videoSource">
+      <track id="subtitleTrack" kind="subtitles" srclang="en" label="English">
+
+    </video>
+
+    <!-- Custom Controls -->
+    <div id="controls"
+      class="controls absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black to-transparent opacity-0 group-hover:opacity-100">
+
+      <div class="flex items-center space-x-4">
+
+        <button onclick="togglePlay()">▶</button>
+
+        <button onclick="skipIntro()">Skip Intro</button>
+
+        <input type="range" min="0" max="100" value="100"
+          class="range w-32"
+          onchange="changeVolume(this.value)">
+
+        <button onclick="toggleTheater()">Theater</button>
+
+        <button onclick="enablePIP()">PIP</button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- LIKE -->
+  <div class="flex items-center space-x-5 mt-4">
+    <button onclick="likeVideo()" class="bg-red-600 px-4 py-2 rounded">
+      ❤️ Like
+    </button>
+    <span id="likeCount"></span>
+  </div>
+
+  <!-- COMMENTS -->
+  <div class="mt-8">
+    <h2 class="text-xl mb-3">Comments</h2>
+
+    <input id="commentInput"
+      class="w-full p-2 bg-gray-800 rounded"
+      placeholder="Write comment...">
+
+    <button onclick="postComment()"
+      class="mt-2 bg-blue-600 px-4 py-2 rounded">
+      Post
+    </button>
+
+    <div id="commentsList" class="mt-5 space-y-3"></div>
+  </div>
+
+</div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+const supabase = createClient(
+  "https://ahhuhanjvwrltwdnrqxc.supabase.co",
+  "sb_publishable_vCOpkdTBVH1d4exzr82JIQ_uNJNIzIu"
+)
+
+const urlParams = new URLSearchParams(window.location.search)
+const videoUrl = urlParams.get("video")
+
+const video = document.getElementById("video")
+document.getElementById("videoSource").src = videoUrl
+video.load()
+
+// 🎮 Controls
+window.togglePlay = function() {
+  video.paused ? video.play() : video.pause()
+}
+
+window.skipIntro = function() {
+  video.currentTime += 60
+}
+
+window.changeVolume = function(val) {
+  video.volume = val / 100
+}
+
+window.toggleTheater = function() {
+  video.classList.toggle("scale-125")
+}
+
+window.enablePIP = function() {
+  video.requestPictureInPicture()
+}
+
+// ❤️ Likes
+window.likeVideo = async function() {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return alert("Login first")
+
+  await supabase.from("likes").insert({
+    video_url: videoUrl,
+    user_id: user.id
+  })
+
+  loadLikes()
+}
+
+async function loadLikes() {
+  const { data } = await supabase
+    .from("likes")
+    .select("*")
+    .eq("video_url", videoUrl)
+
+  document.getElementById("likeCount").innerText =
+    data.length + " Likes"
+}
+
+loadLikes()
+
+// 💬 Comments
+window.postComment = async function() {
+  const { data: { user } } = await supabase.auth.getUser()
+  const text = document.getElementById("commentInput").value
+
+  await supabase.from("comments").insert({
+    video_url: videoUrl,
+    user_id: user.id,
+    comment: text
+  })
+
+  document.getElementById("commentInput").value = ""
+  loadComments()
+}
+
+async function loadComments() {
+  const { data } = await supabase
+    .from("comments")
+    .select("*")
+    .eq("video_url", videoUrl)
+    .order("created_at", { ascending: false })
+
+  const list = document.getElementById("commentsList")
+  list.innerHTML = ""
+
+  data.forEach(c => {
+    list.innerHTML += `
+      <div class="bg-gray-900 p-3 rounded">
+        ${c.comment}
+      </div>
+    `
+  })
+}
+
+loadComments()
+
+// 🔥 Auto Next Video
+video.addEventListener("ended", () => {
+  alert("Next Video Playing Soon 🚀")
+})
+
+</script>
+
+</body>
+</html>
