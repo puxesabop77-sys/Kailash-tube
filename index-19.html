@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nova Tube – Sign Up</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --nova-red: #ff2d55;
+    --nova-orange: #ff6b2b;
+    --nova-yellow: #ffd700;
+    --nova-glow: #ff4500;
+    --dark-bg: #050508;
+    --card-bg: rgba(15,10,25,0.92);
+    --text-main: #f0e6ff;
+    --text-muted: #888aaa;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--dark-bg);
+    font-family: 'Rajdhani', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  /* ── 3D ROTATING STAR FIELD ── */
+  #starfield {
+    position: fixed; inset: 0; z-index: 0;
+    perspective: 600px;
+  }
+  .star {
+    position: absolute;
+    border-radius: 50%;
+    background: white;
+    animation: flyIn linear infinite;
+  }
+
+  @keyframes flyIn {
+    0%   { transform: translateZ(-800px) scale(0); opacity: 0; }
+    20%  { opacity: 1; }
+    100% { transform: translateZ(400px) scale(1); opacity: 0; }
+  }
+
+  /* ── NEON GRID FLOOR ── */
+  .grid-floor {
+    position: fixed;
+    bottom: -60px; left: -20%; width: 140%; height: 60vh;
+    background:
+      linear-gradient(to bottom, transparent 60%, rgba(255,45,85,0.08) 100%),
+      repeating-linear-gradient(90deg, rgba(255,45,85,0.15) 0px, transparent 1px, transparent 60px, rgba(255,45,85,0.15) 61px),
+      repeating-linear-gradient(0deg,  rgba(255,45,85,0.15) 0px, transparent 1px, transparent 60px, rgba(255,45,85,0.15) 61px);
+    transform: perspective(500px) rotateX(55deg);
+    z-index: 0;
+    animation: gridPulse 4s ease-in-out infinite;
+  }
+  @keyframes gridPulse {
+    0%,100% { opacity: 0.6; }
+    50%      { opacity: 1; }
+  }
+
+  /* ── FLOATING 3D ORBS ── */
+  .orb {
+    position: fixed; border-radius: 50%; z-index: 0; pointer-events: none;
+    filter: blur(60px);
+    animation: orbFloat ease-in-out infinite;
+  }
+  .orb1 { width:400px; height:400px; top:-100px; left:-100px; background:radial-gradient(circle, rgba(255,45,85,0.35), transparent 70%); animation-duration:8s; }
+  .orb2 { width:300px; height:300px; bottom:0; right:-50px;  background:radial-gradient(circle, rgba(255,107,43,0.3), transparent 70%); animation-duration:10s; animation-delay:2s; }
+  .orb3 { width:250px; height:250px; top:40%; left:60%;       background:radial-gradient(circle, rgba(255,215,0,0.2), transparent 70%);  animation-duration:12s; animation-delay:4s; }
+
+  @keyframes orbFloat {
+    0%,100% { transform: translateY(0) scale(1); }
+    50%      { transform: translateY(-30px) scale(1.08); }
+  }
+
+  /* ── MAIN CARD ── */
+  .auth-card {
+    position: relative; z-index: 10;
+    background: var(--card-bg);
+    border: 1px solid rgba(255,45,85,0.3);
+    border-radius: 24px;
+    padding: 48px 44px;
+    width: 440px;
+    max-width: 95vw;
+    backdrop-filter: blur(20px);
+    box-shadow:
+      0 0 0 1px rgba(255,45,85,0.1),
+      0 20px 60px rgba(0,0,0,0.6),
+      0 0 80px rgba(255,45,85,0.08),
+      inset 0 1px 0 rgba(255,255,255,0.06);
+    animation: cardAppear 0.8s cubic-bezier(0.16,1,0.3,1) both;
+    transform-style: preserve-3d;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+  }
+  .auth-card:hover {
+    box-shadow:
+      0 0 0 1px rgba(255,45,85,0.25),
+      0 30px 80px rgba(0,0,0,0.7),
+      0 0 120px rgba(255,45,85,0.15),
+      inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+  @keyframes cardAppear {
+    from { opacity:0; transform: translateY(40px) rotateX(8deg) scale(0.95); }
+    to   { opacity:1; transform: translateY(0)   rotateX(0)    scale(1); }
+  }
+
+  /* ── LOGO ── */
+  .logo-wrap {
+    display: flex; align-items: center; justify-content: center;
+    gap: 12px; margin-bottom: 32px;
+  }
+  .logo-icon {
+    width: 52px; height: 52px; border-radius: 14px;
+    background: linear-gradient(135deg, var(--nova-red), var(--nova-orange));
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 24px rgba(255,45,85,0.6), 0 0 60px rgba(255,107,43,0.3);
+    position: relative; overflow: hidden;
+    animation: logoPulse 3s ease-in-out infinite;
+  }
+  @keyframes logoPulse {
+    0%,100% { box-shadow: 0 0 24px rgba(255,45,85,0.6), 0 0 60px rgba(255,107,43,0.3); }
+    50%      { box-shadow: 0 0 40px rgba(255,45,85,0.9), 0 0 90px rgba(255,107,43,0.5); }
+  }
+  .logo-icon svg { width:28px; height:28px; fill:white; }
+  .logo-icon::before {
+    content:''; position:absolute; inset:0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+    border-radius: inherit;
+  }
+  .logo-text {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 28px; font-weight: 900;
+    background: linear-gradient(135deg, #fff 0%, var(--nova-yellow) 50%, var(--nova-red) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    letter-spacing: 2px;
+    text-shadow: none;
+  }
+
+  /* ── TABS ── */
+  .tabs {
+    display: flex; gap: 4px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 12px; padding: 4px;
+    margin-bottom: 28px;
+  }
+  .tab-btn {
+    flex:1; padding: 10px; border:none; background:transparent;
+    color: var(--text-muted); font-family: 'Rajdhani', sans-serif;
+    font-size: 15px; font-weight: 600; letter-spacing: 1px;
+    border-radius: 9px; cursor: pointer;
+    transition: all 0.3s ease; text-transform: uppercase;
+  }
+  .tab-btn.active {
+    background: linear-gradient(135deg, var(--nova-red), var(--nova-orange));
+    color: white;
+    box-shadow: 0 4px 20px rgba(255,45,85,0.4);
+  }
+
+  /* ── FORMS ── */
+  .form-panel { display: none; }
+  .form-panel.active { display: block; animation: fadeSlide 0.4s ease; }
+  @keyframes fadeSlide {
+    from { opacity:0; transform:translateX(10px); }
+    to   { opacity:1; transform:translateX(0); }
+  }
+
+  .field {
+    margin-bottom: 18px;
+  }
+  .field label {
+    display: block; font-size: 12px; font-weight: 600;
+    color: var(--text-muted); text-transform: uppercase;
+    letter-spacing: 1.5px; margin-bottom: 8px;
+  }
+  .field input {
+    width: 100%; padding: 14px 18px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px; color: var(--text-main);
+    font-family: 'Rajdhani', sans-serif; font-size: 16px;
+    outline: none; transition: all 0.3s ease;
+  }
+  .field input::placeholder { color: rgba(255,255,255,0.2); }
+  .field input:focus {
+    border-color: var(--nova-red);
+    background: rgba(255,45,85,0.06);
+    box-shadow: 0 0 0 3px rgba(255,45,85,0.12), 0 0 20px rgba(255,45,85,0.1);
+  }
+
+  /* ── SUBMIT BUTTON ── */
+  .btn-submit {
+    width: 100%; padding: 16px;
+    background: linear-gradient(135deg, var(--nova-red), var(--nova-orange));
+    border: none; border-radius: 12px; color: white;
+    font-family: 'Orbitron', sans-serif; font-size: 14px;
+    font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    cursor: pointer; position: relative; overflow: hidden;
+    transition: all 0.3s ease; margin-top: 8px;
+    box-shadow: 0 8px 32px rgba(255,45,85,0.35);
+  }
+  .btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(255,45,85,0.5);
+  }
+  .btn-submit:active { transform: translateY(0); }
+  .btn-submit::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .btn-submit:hover::after { opacity: 1; }
+  .btn-submit.loading { pointer-events: none; opacity: 0.7; }
+
+  /* ── MESSAGE ── */
+  .msg {
+    margin-top: 16px; padding: 12px 16px;
+    border-radius: 10px; font-size: 14px;
+    font-weight: 600; text-align: center; display: none;
+  }
+  .msg.success { background: rgba(0,230,100,0.1); border: 1px solid rgba(0,230,100,0.3); color: #00e664; display: block; }
+  .msg.error   { background: rgba(255,45,85,0.1);  border: 1px solid rgba(255,45,85,0.3);  color: var(--nova-red); display: block; }
+
+  /* ── DIVIDER ── */
+  .divider {
+    text-align: center; color: var(--text-muted);
+    font-size: 12px; letter-spacing: 2px;
+    margin: 20px 0; position: relative;
+  }
+  .divider::before, .divider::after {
+    content:''; position:absolute; top:50%; width:36%; height:1px;
+    background: rgba(255,255,255,0.08);
+  }
+  .divider::before { left:0; }
+  .divider::after  { right:0; }
+
+  .footer-link {
+    text-align: center; margin-top: 20px;
+    font-size: 13px; color: var(--text-muted);
+  }
+  .footer-link a {
+    color: var(--nova-red); text-decoration: none;
+    font-weight: 600; transition: color 0.2s;
+  }
+  .footer-link a:hover { color: var(--nova-orange); }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width:480px) {
+    .auth-card { padding: 32px 24px; }
+    .logo-text { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- STAR FIELD -->
+<div id="starfield"></div>
+<!-- GRID FLOOR -->
+<div class="grid-floor"></div>
+<!-- FLOATING ORBS -->
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
+
+<!-- AUTH CARD -->
+<div class="auth-card" id="authCard">
+
+  <!-- LOGO -->
+  <div class="logo-wrap">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+    </div>
+    <span class="logo-text">NOVA TUBE</span>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('signup')">Sign Up</button>
+    <button class="tab-btn" onclick="switchTab('signin')">Sign In</button>
+  </div>
+
+  <!-- SIGN UP FORM -->
+  <div class="form-panel active" id="panel-signup">
+    <div class="field">
+      <label>Full Name</label>
+      <input type="text" id="su-name" placeholder="Your name">
+    </div>
+    <div class="field">
+      <label>Email Address</label>
+      <input type="email" id="su-email" placeholder="you@example.com">
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="su-password" placeholder="Min 6 characters">
+    </div>
+    <button class="btn-submit" id="btn-signup" onclick="handleSignup()">
+      🚀 &nbsp; CREATE ACCOUNT
+    </button>
+    <div class="msg" id="msg-signup"></div>
+    <div class="footer-link">
+      Already have an account? <a href="#" onclick="switchTab('signin')">Sign In</a>
+    </div>
+  </div>
+
+  <!-- SIGN IN FORM -->
+  <div class="form-panel" id="panel-signin">
+    <div class="field">
+      <label>Email Address</label>
+      <input type="email" id="si-email" placeholder="you@example.com">
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="si-password" placeholder="Your password">
+    </div>
+    <button class="btn-submit" id="btn-signin" onclick="handleSignin()">
+      ▶ &nbsp; ENTER NOVA TUBE
+    </button>
+    <div class="msg" id="msg-signin"></div>
+    <div class="footer-link">
+      New here? <a href="#" onclick="switchTab('signup')">Create Account</a>
+    </div>
+  </div>
+
+</div>
+
+<!-- SUPABASE SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  // ── SUPABASE INIT ──
+  const { createClient } = supabase;
+  const sb = createClient(
+    'https://ahhuhanjvwrltwdnrqxc.supabase.co',
+    'sb_publishable_vCOpkdTBVH1d4exzr82JIQ_uNJNIzIu'
+  );
+
+  // ── STAR FIELD GENERATOR ──
+  (function(){
+    const sf = document.getElementById('starfield');
+    for(let i=0; i<160; i++){
+      const s = document.createElement('div');
+      s.className = 'star';
+      const sz = Math.random()*3+0.5;
+      s.style.cssText = `
+        width:${sz}px; height:${sz}px;
+        left:${Math.random()*100}%;
+        top:${Math.random()*100}%;
+        animation-duration:${Math.random()*6+4}s;
+        animation-delay:${Math.random()*8}s;
+        opacity:${Math.random()*0.8+0.2};
+      `;
+      sf.appendChild(s);
+    }
+  })();
+
+  // ── 3D CARD TILT ──
+  const card = document.getElementById('authCard');
+  document.addEventListener('mousemove', e => {
+    const cx = window.innerWidth/2, cy = window.innerHeight/2;
+    const dx = (e.clientX - cx)/cx, dy = (e.clientY - cy)/cy;
+    card.style.transform = `perspective(1000px) rotateY(${dx*6}deg) rotateX(${-dy*4}deg)`;
+  });
+  document.addEventListener('mouseleave', () => {
+    card.style.transform = 'perspective(1000px) rotateY(0) rotateX(0)';
+  });
+
+  // ── TAB SWITCHER ──
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', (tab==='signup'&&i===0)||(tab==='signin'&&i===1)));
+    document.querySelectorAll('.form-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-'+tab).classList.add('active');
+  }
+
+  // ── SHOW MESSAGE ──
+  function showMsg(id, text, type) {
+    const el = document.getElementById(id);
+    el.textContent = text;
+    el.className = 'msg ' + type;
+  }
+
+  // ── SIGN UP ──
+  async function handleSignup() {
+    const name  = document.getElementById('su-name').value.trim();
+    const email = document.getElementById('su-email').value.trim();
+    const pass  = document.getElementById('su-password').value;
+    const btn   = document.getElementById('btn-signup');
+
+    if(!name||!email||!pass){ showMsg('msg-signup','Please fill all fields','error'); return; }
+    if(pass.length<6){ showMsg('msg-signup','Password must be at least 6 characters','error'); return; }
+
+    btn.classList.add('loading'); btn.textContent='Creating...';
+
+    const { data, error } = await sb.auth.signUp({
+      email, password: pass,
+      options: { data: { full_name: name } }
+    });
+
+    btn.classList.remove('loading'); btn.innerHTML='🚀 &nbsp; CREATE ACCOUNT';
+
+    if(error){ showMsg('msg-signup', error.message, 'error'); return; }
+    showMsg('msg-signup','✅ Account created! Check your email to confirm.','success');
+    setTimeout(() => window.location.href = 'home.html', 2200);
+  }
+
+  // ── SIGN IN ──
+  async function handleSignin() {
+    const email = document.getElementById('si-email').value.trim();
+    const pass  = document.getElementById('si-password').value;
+    const btn   = document.getElementById('btn-signin');
+
+    if(!email||!pass){ showMsg('msg-signin','Please fill all fields','error'); return; }
+
+    btn.classList.add('loading'); btn.textContent='Signing in...';
+
+    const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+
+    btn.classList.remove('loading'); btn.innerHTML='▶ &nbsp; ENTER NOVA TUBE';
+
+    if(error){ showMsg('msg-signin', error.message, 'error'); return; }
+
+    // Check if admin
+    if(email === 'sufiyan@novatube.com') {
+      window.location.href = 'sufiyan.html';
+    } else {
+      window.location.href = 'home.html';
+    }
+  }
+
+  // ── AUTO REDIRECT IF LOGGED IN ──
+  (async()=>{
+    const { data: { session } } = await sb.auth.getSession();
+    if(session) window.location.href = 'home.html';
+  })();
+</script>
+</body>
+</html>
