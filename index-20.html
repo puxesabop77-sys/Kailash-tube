@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nova Tube</title>
+<link href="https://fonts.googleapis.com/css2?family=Netflix+Sans:wght@400;500;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #000;
+    color: #fff;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── HERO BACKGROUND ── */
+  .hero-bg {
+    position: fixed; inset: 0; z-index: 0;
+    background-image: url('https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=1600&q=80');
+    background-size: cover;
+    background-position: center;
+    filter: brightness(0.35);
+  }
+  .hero-bg::after {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 40%, transparent 60%, rgba(0,0,0,0.8) 100%),
+      linear-gradient(to right, rgba(0,0,0,0.3), transparent);
+  }
+
+  /* ── NAVBAR ── */
+  .navbar {
+    position: relative; z-index: 10;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 24px 48px;
+  }
+  .logo {
+    font-size: 36px; font-weight: 900;
+    color: #e50914; letter-spacing: -1px;
+    font-family: 'Inter', sans-serif;
+    text-shadow: 0 0 30px rgba(229,9,20,0.5);
+  }
+  .logo span { color: #fff; }
+
+  /* ── MAIN CONTENT ── */
+  .main {
+    position: relative; z-index: 10;
+    display: flex; align-items: center; justify-content: center;
+    min-height: calc(100vh - 100px);
+    padding: 20px;
+  }
+
+  /* ── AUTH BOX ── */
+  .auth-box {
+    background: rgba(0,0,0,0.82);
+    border-radius: 4px;
+    padding: 60px 68px;
+    width: 100%;
+    max-width: 450px;
+    backdrop-filter: blur(2px);
+  }
+
+  .auth-box h1 {
+    font-size: 32px; font-weight: 700;
+    color: #fff; margin-bottom: 28px;
+    letter-spacing: -0.5px;
+  }
+
+  /* TABS */
+  .tab-row {
+    display: flex; border-bottom: 2px solid #333;
+    margin-bottom: 28px; gap: 0;
+  }
+  .tab-btn {
+    flex: 1; padding: 12px 0; background: none;
+    border: none; border-bottom: 3px solid transparent;
+    margin-bottom: -2px; color: #888;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px; font-weight: 600; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tab-btn.active {
+    color: #fff; border-bottom-color: #e50914;
+  }
+
+  /* FIELDS */
+  .field { margin-bottom: 16px; position: relative; }
+  .field input {
+    width: 100%; height: 50px;
+    background: #333; border: none; border-radius: 4px;
+    color: #fff; padding: 16px 20px;
+    font-family: 'Inter', sans-serif; font-size: 16px;
+    outline: none; transition: background 0.2s, box-shadow 0.2s;
+  }
+  .field input::placeholder { color: #aaa; font-size: 14px; }
+  .field input:focus {
+    background: #454545;
+    box-shadow: inset 0 0 0 2px #e50914;
+  }
+
+  /* SUBMIT */
+  .btn-main {
+    width: 100%; height: 50px; margin-top: 8px;
+    background: #e50914; border: none; border-radius: 4px;
+    color: #fff; font-family: 'Inter', sans-serif;
+    font-size: 16px; font-weight: 700; cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    letter-spacing: 0.3px;
+  }
+  .btn-main:hover { background: #f40612; }
+  .btn-main:active { transform: scale(0.99); }
+  .btn-main:disabled { opacity: 0.7; pointer-events: none; }
+
+  /* DIVIDER */
+  .divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 20px 0; color: #888; font-size: 13px;
+  }
+  .divider::before, .divider::after {
+    content: ''; flex: 1; height: 1px; background: #444;
+  }
+
+  /* MSG */
+  .msg { padding: 12px 16px; border-radius: 4px; font-size: 14px; font-weight: 500; display: none; margin-top: 12px; }
+  .msg.error   { background: rgba(229,9,20,0.15); border: 1px solid rgba(229,9,20,0.4); color: #ff6b6b; display: block; }
+  .msg.success { background: rgba(70,211,105,0.15); border: 1px solid rgba(70,211,105,0.4); color: #46d369; display: block; }
+
+  /* FOOTER TEXT */
+  .auth-footer { margin-top: 20px; color: #737373; font-size: 14px; }
+  .auth-footer a { color: #fff; text-decoration: none; }
+  .auth-footer a:hover { text-decoration: underline; }
+
+  .small-text { color: #8c8c8c; font-size: 13px; margin-top: 16px; line-height: 1.5; }
+  .small-text a { color: #0071eb; text-decoration: none; }
+
+  /* FORM PANELS */
+  .form-panel { display: none; }
+  .form-panel.active { display: block; }
+
+  /* BOTTOM BAR */
+  .bottom-bar {
+    position: relative; z-index: 10;
+    background: rgba(0,0,0,0.7);
+    border-top: 1px solid #333;
+    padding: 24px 48px;
+    text-align: center;
+    color: #737373; font-size: 13px;
+  }
+  .bottom-bar a { color: #737373; text-decoration: none; margin: 0 8px; }
+  .bottom-bar a:hover { text-decoration: underline; }
+
+  @media(max-width: 600px) {
+    .navbar { padding: 20px 24px; }
+    .auth-box { padding: 40px 24px; }
+    .logo { font-size: 28px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero-bg"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="logo">NOVA<span>TUBE</span></div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="auth-box">
+    <h1 id="authTitle">Sign In</h1>
+
+    <!-- TABS -->
+    <div class="tab-row">
+      <button class="tab-btn active" id="tab-signin" onclick="switchTab('signin')">Sign In</button>
+      <button class="tab-btn" id="tab-signup" onclick="switchTab('signup')">Sign Up</button>
+    </div>
+
+    <!-- SIGN IN -->
+    <div class="form-panel active" id="panel-signin">
+      <div class="field">
+        <input type="email" id="si-email" placeholder="Email address">
+      </div>
+      <div class="field">
+        <input type="password" id="si-password" placeholder="Password">
+      </div>
+      <button class="btn-main" id="btn-signin" onclick="handleSignin()">Sign In</button>
+      <div class="msg" id="msg-signin"></div>
+      <div class="auth-footer" style="margin-top:16px;">
+        New to Nova Tube? <a href="#" onclick="switchTab('signup')">Sign up now.</a>
+      </div>
+      <div class="small-text">
+        This page is protected by Nova Tube.
+      </div>
+    </div>
+
+    <!-- SIGN UP -->
+    <div class="form-panel" id="panel-signup">
+      <div class="field">
+        <input type="text" id="su-name" placeholder="Full name">
+      </div>
+      <div class="field">
+        <input type="email" id="su-email" placeholder="Email address">
+      </div>
+      <div class="field">
+        <input type="password" id="su-password" placeholder="Password (min. 6 characters)">
+      </div>
+      <button class="btn-main" id="btn-signup" onclick="handleSignup()">Create Account</button>
+      <div class="msg" id="msg-signup"></div>
+      <div class="auth-footer" style="margin-top:16px;">
+        Already have an account? <a href="#" onclick="switchTab('signin')">Sign in.</a>
+      </div>
+      <div class="small-text">
+        By signing up, you agree to our Terms of Use and Privacy Policy.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- BOTTOM BAR -->
+<div class="bottom-bar">
+  <p style="margin-bottom:12px;">Questions? Contact us.</p>
+  <a href="#">FAQ</a>
+  <a href="#">Help Center</a>
+  <a href="#">Terms of Use</a>
+  <a href="#">Privacy</a>
+  <br><br>
+  <p>Nova Tube &copy; 2025</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const { createClient } = supabase;
+  const sb = createClient(
+    'https://ahhuhanjvwrltwdnrqxc.supabase.co',
+    'sb_publishable_vCOpkdTBVH1d4exzr82JIQ_uNJNIzIu'
+  );
+
+  // Auto redirect if already logged in
+  (async () => {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) window.location.href = 'home.html';
+  })();
+
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.form-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    document.getElementById('panel-' + tab).classList.add('active');
+    document.getElementById('authTitle').textContent = tab === 'signin' ? 'Sign In' : 'Sign Up';
+  }
+
+  function showMsg(id, txt, type) {
+    const el = document.getElementById(id);
+    el.textContent = txt; el.className = 'msg ' + type;
+  }
+
+  async function handleSignin() {
+    const email = document.getElementById('si-email').value.trim();
+    const pass  = document.getElementById('si-password').value;
+    const btn   = document.getElementById('btn-signin');
+    if (!email || !pass) { showMsg('msg-signin', 'Please enter email and password.', 'error'); return; }
+    btn.disabled = true; btn.textContent = 'Signing in...';
+    const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+    btn.disabled = false; btn.textContent = 'Sign In';
+    if (error) { showMsg('msg-signin', error.message, 'error'); return; }
+    window.location.href = 'home.html';
+  }
+
+  async function handleSignup() {
+    const name  = document.getElementById('su-name').value.trim();
+    const email = document.getElementById('su-email').value.trim();
+    const pass  = document.getElementById('su-password').value;
+    const btn   = document.getElementById('btn-signup');
+    if (!name || !email || !pass) { showMsg('msg-signup', 'Please fill in all fields.', 'error'); return; }
+    if (pass.length < 6) { showMsg('msg-signup', 'Password must be at least 6 characters.', 'error'); return; }
+    btn.disabled = true; btn.textContent = 'Creating account...';
+    const { data, error } = await sb.auth.signUp({ email, password: pass, options: { data: { full_name: name } } });
+    btn.disabled = false; btn.textContent = 'Create Account';
+    if (error) { showMsg('msg-signup', error.message, 'error'); return; }
+    showMsg('msg-signup', '✅ Account created! Check your email to confirm, then sign in.', 'success');
+  }
+</script>
+</body>
+</html>
